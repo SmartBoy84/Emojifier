@@ -17,7 +17,7 @@ __uint8_t generateChart(__uint8_t scale)
 
     if (fWidth % scale != 0 || fHeight % scale != 0)
     {
-        printf("Unsupported scale factor - should be 2, 3, 4, 6, 8, 9, 12, 13, 14, 18, 26, 36");
+        printf("Unsupported scale factor - should be 2, 3, 4, 6, 8, 9, 12, 18, 26, 36");
         return 1;
     }
 
