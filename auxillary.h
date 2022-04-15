@@ -25,8 +25,8 @@ __uint8_t generateChart(__uint8_t scale)
 
     if (dir)
     {
-        __uint8_t fileWidth = (__uint8_t)fWidth / scale;
-        __uint8_t fileHeight = (__uint8_t)fHeight / scale;
+        __int32_t fileWidth = scale == 1 ? fWidth : (__uint8_t)fWidth / scale;
+        __int32_t fileHeight = scale == 1 ? fHeight : (__uint8_t)fHeight / scale;
 
         pixel *pixelChart = createPixelArray(fileWidth * aWidth, fileHeight * aHeight); // emoji chart
         pixel *pixelBuffer = createPixelArray(fileWidth * fileHeight, fN);              // raw rgb buffer
@@ -73,7 +73,8 @@ __uint8_t generateChart(__uint8_t scale)
                 // write emoji chart
                 for (int y = 0; y < fileHeight; y++)
                 {
-                    memcpy(pixelArray + (width(pixelChart) * y), fileBuffer + (fileWidth * y), fileWidth * sizeof(pixel));
+                    memcpy(pixelArray + (width(pixelChart) * y), fileBuffer + (fileWidth * y),
+                           fileWidth * sizeof(pixel));
                 }
 
                 pixelArray += i % aWidth == 0 ? width(pixelChart) * (fileHeight - 1) : fileWidth;
@@ -90,6 +91,10 @@ __uint8_t generateChart(__uint8_t scale)
 
         // populate raw rgb file
         FILE *wptr = fopen("emojis.bin", "wb");
+
+        __int32_t dimensions[] = {fileWidth, fileHeight};
+        fwrite(&dimensions, 2, sizeof(__int32_t), wptr); // so I can read it later on
+
         fwrite(pixelBuffer, arraySize(pixelBuffer), sizeof(pixel), wptr);
         fclose(wptr);
 
