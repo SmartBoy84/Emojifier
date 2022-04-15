@@ -1,18 +1,42 @@
 #include "auxillary.h"
 #include <time.h>
 
-int main()
-{
-    generateChart(1);
+#define defaultScale 3
 
-    FILE *rptr = fopen("emojis.bin", "rb");
+int main(int argc, char *argv[])
+{
+    FILE *Image;
+    if (argc < 2 || !(Image = fopen(argv[0], "rb")))
+    {
+        printf("File doesn't exist, exiting");
+        return 1;
+    }
+
+    FILE *emojiBuffer;
+    if (argc >= 3)
+    {
+        generateChart(atoi(argv[2]));
+    }
+
+    if (!(emojiBuffer = fopen("emojis.bin", "rb")))
+    {
+        if (generateChart(defaultScale))
+        {
+            printf("Failed to find %s, exiting", "emojis.bin");
+            return 1;
+        }
+        else
+        {
+            emojiBuffer = fopen("emojis.bin", "rb");
+        }
+    }
 
     __int32_t height;
-    fread(&height, sizeof(__int32_t), 1, rptr);
+    fread(&height, sizeof(__int32_t), 1, emojiBuffer);
 
     __int32_t width;
-    fseek(rptr, sizeof(__int32_t), SEEK_SET);
-    fread(&width, sizeof(__int32_t), 1, rptr);
+    fseek(emojiBuffer, sizeof(__int32_t), SEEK_SET);
+    fread(&width, sizeof(__int32_t), 1, emojiBuffer);
 
     for (int i = 0; i < 3301; i++)
     {
@@ -20,13 +44,13 @@ int main()
 
         printf("%d\n", i);
 
-        fseek(rptr, height * width * i * sizeof(pixel), SEEK_CUR);
+        fseek(emojiBuffer, height * width * i * sizeof(pixel), SEEK_CUR);
         pixel *test = createPixelArray(width, height);
-        fread(test, sizeof(pixel), height * width, rptr);
+        fread(test, sizeof(pixel), height * width, emojiBuffer);
 
         writeArray(test, "test.bmp");
     }
 
-    fclose(rptr);
+    fclose(emojiBuffer);
     return 0;
 }

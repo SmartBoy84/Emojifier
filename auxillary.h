@@ -14,8 +14,9 @@
 
 __uint8_t generateChart(__uint8_t scale)
 {
+    printf("Generating auxillary buffers...");
 
-    if (fWidth % scale != 0 || fHeight % scale != 0)
+    if (scale > 1 && (fWidth % scale != 0 || fHeight % scale != 0))
     {
         printf("Unsupported scale factor - should be 2, 3, 4, 6, 8, 9, 12, 18, 26, 36");
         return 1;
@@ -25,8 +26,8 @@ __uint8_t generateChart(__uint8_t scale)
 
     if (dir)
     {
-        __int32_t fileWidth = scale == 1 ? fWidth : (__uint8_t)fWidth / scale;
-        __int32_t fileHeight = scale == 1 ? fHeight : (__uint8_t)fHeight / scale;
+        __int32_t fileWidth = (__uint8_t)fWidth / scale;
+        __int32_t fileHeight = (__uint8_t)fHeight / scale;
 
         pixel *pixelChart = createPixelArray(fileWidth * aWidth, fileHeight * aHeight); // emoji chart
         pixel *pixelBuffer = createPixelArray(fileWidth * fileHeight, fN);              // raw rgb buffer
