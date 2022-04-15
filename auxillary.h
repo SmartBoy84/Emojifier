@@ -1,31 +1,60 @@
 #include "bmpcreator.h"
 #include <dirent.h>
+#include <math.h>
 
-// file specs
-#define fOffset 138
-#define fSize 20874
-#define fWidth 72
-#define fHeight 72
 #define fN 3301
 
-// array dimensions
-#define aWidth 56
-#define aHeight 59
-
-__uint8_t generateChart(__uint8_t scale)
+int getInfo(__uint32_t *offset, __int32_t *width, __int32_t *height)
 {
-    printf("Generating auxillary buffers...");
+    FILE *info;
 
-    if (scale > 1 && (fWidth % scale != 0 || fHeight % scale != 0))
+    if (!(info = fopen("emojis/1.bmp", "rb")))
     {
-        printf("Unsupported scale factor - should be 2, 3, 4, 6, 8, 9, 12, 18, 26, 36");
+        printf("No file in emojis folder?");
         return 1;
     }
+
+    fseek(info, fOffsetOffset, SEEK_SET);
+    fread(offset, sizeof(__uint32_t), 1, info);
+
+    // read height and width from file
+    fseek(info, fWidthOffset, SEEK_SET);
+    fread(width, sizeof(__int32_t), 1, info);
+
+    fseek(info, fWidthOffset + sizeof(__int32_t), SEEK_SET);
+    fread(height, sizeof(__int32_t), 1, info);
+
+    fclose(info);
+    return 0;
+}
+
+int generateChart(__uint8_t scale)
+{
+    printf("Generating auxillary buffers...");
 
     DIR *dir = opendir("emojis");
 
     if (dir)
     {
+        __int32_t fWidth;
+        __int32_t fHeight;
+        __uint32_t fOffset;
+
+        if (getInfo(&fOffset, &fWidth, &fHeight))
+        {
+            printf("No file in emojis folder?");
+            return 1;
+        }
+
+        if (scale > 1 && (fWidth % scale != 0 || fHeight % scale != 0))
+        {
+            printf("Unsupported scale factor - should be 2, 3, 4, 6, 8, 9, 12, 18, 26, 36");
+            return 1;
+        }
+
+        __int32_t aWidth = sqrt(fN) + 1;
+        __int32_t aHeight = (fN / aWidth) + 1;
+
         __int32_t fileWidth = (__uint8_t)fWidth / scale;
         __int32_t fileHeight = (__uint8_t)fHeight / scale;
 
