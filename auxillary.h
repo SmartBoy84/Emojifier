@@ -12,14 +12,24 @@
 #define aWidth 56
 #define aHeight 59
 
-__uint8_t generateChart()
+__uint8_t generateChart(__uint8_t scale)
 {
+
+    if (fWidth % scale != 0 || fHeight % scale != 0)
+    {
+        printf("Unsupported scale factor - should be 2, 3, 4, 6, 8, 9, 12, 13, 14, 18, 26, 36");
+        return 1;
+    }
+
     DIR *dir = opendir("emojis");
 
     if (dir)
     {
-        pixel *pixelChart = createPixelArray(fWidth * aWidth, fHeight * aHeight); // emoji chart
-        pixel *pixelBuffer = createPixelArray(fWidth * fHeight, fN);              // raw rgb buffer
+        __uint8_t fileWidth = (__uint8_t)fWidth / scale;
+        __uint8_t fileHeight = (__uint8_t)fHeight / scale;
+
+        pixel *pixelChart = createPixelArray(fileWidth * aWidth, fileHeight * aHeight); // emoji chart
+        pixel *pixelBuffer = createPixelArray(fileWidth * fileHeight, fN);              // raw rgb buffer
 
         // read files
         pixel *pixelArray = pixelChart;
@@ -44,16 +54,29 @@ __uint8_t generateChart()
                 size_t success = fread(fileBuffer, sizeof(pixel), fWidth * fHeight, rptr);
                 fclose(rptr);
 
+                if (scale > 1)
+                {
+                    for (int y = 0; y < fileHeight; y++)
+                    {
+                        for (int x = 0; x < fileWidth; x++)
+                        {
+                            fileBuffer[(y * fileWidth) + x] = fileBuffer[(y * scale * fWidth) + (x * scale)];
+                        }
+                    }
+
+                    fileBuffer = realloc(fileBuffer, (fileWidth * fileHeight) * sizeof(pixel));
+                }
+
                 // make raw rbg buffer
                 memcpy(pixelBuffer + ((i - 1) * width(pixelBuffer)), fileBuffer, width(pixelBuffer) * sizeof(pixel));
 
                 // write emoji chart
-                for (int y = 0; y < fHeight; y++)
+                for (int y = 0; y < fileHeight; y++)
                 {
-                    memcpy(pixelArray + (width(pixelChart) * y), fileBuffer + (fWidth * y), fWidth * sizeof(pixel));
+                    memcpy(pixelArray + (width(pixelChart) * y), fileBuffer + (fileWidth * y), fileWidth * sizeof(pixel));
                 }
 
-                pixelArray += i % aWidth == 0 ? width(pixelChart) * (fHeight - 1) : fWidth;
+                pixelArray += i % aWidth == 0 ? width(pixelChart) * (fileHeight - 1) : fileWidth;
             }
             else
             {

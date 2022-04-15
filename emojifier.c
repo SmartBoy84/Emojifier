@@ -2,6 +2,6 @@
 
 int main()
 {
-    generateChart();
+    generateChart(2);
     return 0;
 }
