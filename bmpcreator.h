@@ -3,18 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline __int32_t height(__uint8_t *pixels)
+typedef struct
 {
-    return *((__int32_t *)pixels - 1);
-}
-static inline __int32_t width(__uint8_t *pixels)
-{
-    return *((__int32_t *)pixels - 2);
-}
-static inline __int32_t arraySize(__uint8_t *pixels)
-{
-    return height(pixels) * width(pixels) * 4;
-}
+    __uint8_t red;
+    __uint8_t green;
+    __uint8_t blue;
+    __uint8_t alpha;
+} pixel;
 
 #pragma pack(1)
 struct
@@ -80,6 +75,19 @@ struct
                 .colorSpace = {'B', 'G', 'R', 's'},
                 .colorSpaceEndpoints = {0}};
 
+__int32_t height(pixel *pixels)
+{
+    return *((__int32_t *)pixels - 1);
+}
+__int32_t width(pixel *pixels)
+{
+    return *((__int32_t *)pixels - 2);
+}
+__int32_t arraySize(pixel *pixels)
+{
+    return height(pixels) * width(pixels);
+}
+
 size_t headerSize = sizeof(FileHeader) + sizeof(InfoHeader);
 
 char *getHeader(__int32_t width, __int32_t height)
@@ -101,28 +109,30 @@ char *getHeader(__int32_t width, __int32_t height)
     return buffer;
 }
 
-__uint8_t *createPixelArray(__int32_t width, __int32_t height)
+pixel *createPixelArray(__int32_t width, __int32_t height)
 {
-    size_t arraySize = (2 * sizeof(__int32_t)) + (width * height * 4);
-    __uint8_t *array = calloc(arraySize, sizeof(__uint8_t));
+    size_t dimension = (size_t)sizeof(__int32_t) / sizeof(pixel);
+
+    size_t arraySize = (2 * dimension) + (width * height);
+    pixel *array = calloc(arraySize, sizeof(pixel));
 
     // tuck the width and height at the back somewhere
     memcpy(array, &width, sizeof(__int32_t));
-    array += sizeof(__int32_t);
+    array += dimension;
 
     memcpy(array, &height, sizeof(__int32_t));
-    array += sizeof(__int32_t);
+    array += dimension;
 
     return array;
 }
 
-void writeArray(__uint8_t *pixels, char *fileName)
+void writeArray(pixel *pixels, char *fileName)
 {
 
     FILE *wptr = fopen(fileName, "wb");
 
     fwrite(getHeader(width(pixels), height(pixels)), headerSize, 1, wptr);
-    fwrite(pixels, arraySize(pixels), 1, wptr);
+    fwrite(pixels, arraySize(pixels), sizeof(pixel), wptr);
 
     fclose(wptr);
 }

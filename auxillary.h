@@ -18,40 +18,42 @@ __uint8_t generateChart()
 
     if (dir)
     {
-        __uint8_t *pixelChart = createPixelArray(fWidth * aWidth, fHeight * aHeight); // emoji chart
-        __uint8_t *pixelBuffer = createPixelArray(fWidth * fHeight, fN);              // raw rgb buffer
+        pixel *pixelChart = createPixelArray(fWidth * aWidth, fHeight * aHeight); // emoji chart
+        pixel *pixelBuffer = createPixelArray(fWidth * fHeight, fN);              // raw rgb buffer
 
         // read files
-        __uint8_t *pixelArray = pixelChart;
+        pixel *pixelArray = pixelChart;
 
         for (int i = 1; i <= fN; i++)
         {
+            // set name
             char name[100];
             char fileName[100] = "emojis/";
             sprintf(name, "%d", i);
             strcat(fileName, name);
             strcat(fileName, ".bmp");
 
+            // try to read file
             FILE *rptr; // read pointer
 
             if (rptr = fopen(fileName, "rb"))
             {
-                __uint8_t *fileBuffer = calloc(fWidth * fHeight * 4, sizeof(__uint8_t));
+                pixel *fileBuffer = calloc(fWidth * fHeight, sizeof(pixel));
 
                 fseek(rptr, fOffset, SEEK_SET);
-                size_t success = fread(fileBuffer, sizeof(__uint8_t), fSize - fOffset, rptr);
+                size_t success = fread(fileBuffer, sizeof(pixel), fWidth * fHeight, rptr);
                 fclose(rptr);
 
                 // make raw rbg buffer
-                memcpy(pixelBuffer + ((i - 1) * width(pixelBuffer) * 4), fileBuffer, width(pixelBuffer) * 4);
+                memcpy(pixelBuffer + ((i - 1) * width(pixelBuffer)), fileBuffer, width(pixelBuffer) * sizeof(pixel));
 
                 // write emoji chart
                 for (int y = 0; y < fHeight; y++)
                 {
-                    memcpy(pixelArray + (width(pixelChart) * y * 4), fileBuffer + (fWidth * y * 4), fWidth * 4);
+                    memcpy(pixelArray + (width(pixelChart) * y), fileBuffer + (fWidth * y), fWidth * sizeof(pixel));
                 }
 
-                pixelArray += i % aWidth == 0 ? width(pixelChart) * (fHeight - 1) * 4 : fWidth * 4;
+                pixelArray += i % aWidth == 0 ? width(pixelChart) * (fHeight - 1) : fWidth;
             }
             else
             {
@@ -65,7 +67,7 @@ __uint8_t generateChart()
 
         // populate raw rgb file
         FILE *wptr = fopen("emojis.bin", "wb");
-        fwrite(pixelBuffer, arraySize(pixelBuffer), 1, wptr);
+        fwrite(pixelBuffer, arraySize(pixelBuffer), sizeof(pixel), wptr);
         fclose(wptr);
 
         return 0;
