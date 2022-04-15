@@ -7,7 +7,7 @@
 5. `emoji.bin` contains raw pixel data of all the images and `emojichart.bmp` image of every emoji
 
 ## Todo
-    - Elegantly downscale emoji files and input image
-    - Add option to choose which emoji set to use
-    - Embed emoji data into executable
-    - Handle user input flags
+- Elegantly downscale emoji files and input image
+- Add option to choose which emoji set to use
+- Embed emoji data into executable
+- Handle user input flags
