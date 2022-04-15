@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define fOffsetOffset 10
+#define fWidthOffset 18
+
 typedef struct
 {
     __uint8_t red;
