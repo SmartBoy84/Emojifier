@@ -11,6 +11,19 @@ typedef struct
     __uint8_t alpha;
 } pixel;
 
+static inline __int32_t height(pixel *pixels)
+{
+    return *((__int32_t *)pixels - 1);
+}
+static inline __int32_t width(pixel *pixels)
+{
+    return *((__int32_t *)pixels - 2);
+}
+static inline __int32_t arraySize(pixel *pixels)
+{
+    return height(pixels) * width(pixels);
+}
+
 #pragma pack(1)
 struct
 {                        // File header (14 bytes)
@@ -74,19 +87,6 @@ struct
 
                 .colorSpace = {'B', 'G', 'R', 's'},
                 .colorSpaceEndpoints = {0}};
-
-__int32_t height(pixel *pixels)
-{
-    return *((__int32_t *)pixels - 1);
-}
-__int32_t width(pixel *pixels)
-{
-    return *((__int32_t *)pixels - 2);
-}
-__int32_t arraySize(pixel *pixels)
-{
-    return height(pixels) * width(pixels);
-}
 
 size_t headerSize = sizeof(FileHeader) + sizeof(InfoHeader);
 
