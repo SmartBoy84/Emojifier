@@ -4,6 +4,8 @@
 
 #define defaultScale 3
 
+// fread() MOVES THE DAMN POINTER
+
 int main(int argc, char *argv[])
 {
     FILE *Image;
@@ -15,9 +17,7 @@ int main(int argc, char *argv[])
 
     FILE *eF;
     if (argc >= 3)
-    {
         generateChart(atoi(argv[2]));
-    }
 
     if (!(eF = fopen("emojis.bin", "rb")))
     {
@@ -27,26 +27,38 @@ int main(int argc, char *argv[])
             return 1;
         }
         else
-        {
             eF = fopen("emojis.bin", "rb");
-        }
     }
 
     __int32_t imageCount;
-    pixel *emojiBuffer = readBuffer(eF, &imageCount);
+    pixel *emojiBuffer;
+    pixel *averages;
+
+    readBuffer(eF, &imageCount, &emojiBuffer, &averages);
+
     __int32_t imageSize = height(emojiBuffer) * width(emojiBuffer); // get pixel # per image
 
     printf("\nHeight: %d\nWidth: %d\nEmoji count: %d\nEmoji pixel: %d\n", height(emojiBuffer), width(emojiBuffer),
            imageCount, imageSize);
 
+    // read test image
     pixel *test = createPixelArray(width(emojiBuffer), height(emojiBuffer));
+    // int index = 1968;
 
-    for (int i = 0; i < imageCount; i++)
+    for (int index = 403; index <= 403; index++)
     {
         sleep(1);
-        printf("%d\n", i);
+        printf("%d - rgba(%d, %d, %d, %d)\n", index, *((__uint8_t *)(averages + index) + 2),
+               *((__uint8_t *)(averages + index) + 1), *((__uint8_t *)(averages + index)),
+               *((__uint8_t *)(averages + index) + 3));
 
-        memcpy(test, emojiBuffer + (imageSize * i), imageSize * sizeof(pixel));
+        pixel *averageStrip = createPixelArray(width(emojiBuffer), 3);
+        for (int z = 0; z < width(averageStrip) * height(averageStrip); z++)
+            *(averageStrip + z) = *(averages + index);
+
+        memcpy(test, emojiBuffer + (imageSize * index), imageSize * sizeof(pixel));
+        memcpy(test, averageStrip, width(averageStrip) * height(averageStrip) * sizeof(pixel));
+
         writeArray(test, "test.bmp");
     }
 

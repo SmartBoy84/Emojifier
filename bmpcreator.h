@@ -1,5 +1,5 @@
-#ifndef FILE_FOO_SEEN
-#define FILE_FOO_SEEN
+#ifndef bmpcreator // prevent redefinitions
+#define bmpcreator
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -116,7 +116,7 @@ char *getHeader(__int32_t width, __int32_t height)
 
 pixel *createPixelArray(__int32_t width, __int32_t height)
 {
-    size_t dimension = (size_t)sizeof(__int32_t) / sizeof(pixel);
+    size_t dimension = (size_t)sizeof(__int32_t) / sizeof(pixel); // make room for the dimensions at the start
 
     size_t arraySize = (2 * dimension) + (width * height);
     pixel *array = calloc(arraySize, sizeof(pixel));
