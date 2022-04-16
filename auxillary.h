@@ -59,7 +59,8 @@ int generateChart(__uint8_t scale)
         __int32_t fileHeight = (__uint8_t)fHeight / scale;
 
         pixel *pixelChart = createPixelArray(fileWidth * aWidth, fileHeight * aHeight); // emoji chart
-        pixel *pixelBuffer = createPixelArray(fileWidth * fileHeight, fN);              // raw rgb buffer
+        pixel *pixelBuffer =
+            createPixelArray(fileWidth * fileHeight, fN); // raw rgb buffer + 1 pixel per image for average
 
         // read files
         pixel *pixelArray = pixelChart;
@@ -84,18 +85,32 @@ int generateChart(__uint8_t scale)
                 size_t success = fread(fileBuffer, sizeof(pixel), fWidth * fHeight, rptr);
                 fclose(rptr);
 
-                if (scale > 1)
+                __uint32_t averages[3] = {0};
+
+                for (int y = 0; y < fileHeight; y++)
                 {
-                    for (int y = 0; y < fileHeight; y++)
+                    for (int x = 0; x < fileWidth; x++)
                     {
-                        for (int x = 0; x < fileWidth; x++)
-                        {
+                        if (scale > 1)
                             fileBuffer[(y * fileWidth) + x] = fileBuffer[(y * scale * fWidth) + (x * scale)];
+
+                        for (int i = 0; i < 3; i++)
+                        {
+                            averages[i] += *((__uint8_t *)(fileBuffer + (y * scale * fWidth) + (x * scale)) + i);
                         }
                     }
-
-                    fileBuffer = realloc(fileBuffer, (fileWidth * fileHeight) * sizeof(pixel));
                 }
+
+                pixel average = {0};
+
+                for (int i = 0; i < 3; i++)
+                    *((__uint8_t *)&average + i) = (__uint8_t)(averages[i] / (fileHeight * fileWidth));
+
+                // handle case where entire image is transparent
+                if (average.blue > 0 || average.green > 0 || average.red > 0)
+                    average.alpha = 255;
+
+                fileBuffer = realloc(fileBuffer, (fileWidth * fileHeight) * sizeof(pixel));
 
                 // make raw rbg buffer
                 memcpy(pixelBuffer + ((i - 1) * width(pixelBuffer)), fileBuffer, width(pixelBuffer) * sizeof(pixel));
