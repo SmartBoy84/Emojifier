@@ -1,3 +1,5 @@
+#ifndef FILE_FOO_SEEN
+#define FILE_FOO_SEEN
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -139,3 +141,4 @@ void writeArray(pixel *pixels, char *fileName)
 
     fclose(wptr);
 }
+#endif /* !FILE_FOO_SEEN */

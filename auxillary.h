@@ -122,8 +122,8 @@ int generateChart(__uint8_t scale)
         // populate raw rgb file
         FILE *wptr = fopen("emojis.bin", "wb");
 
-        __int32_t dimensions[] = {fileWidth, fileHeight};
-        fwrite(&dimensions, 2, sizeof(__int32_t), wptr); // so I can read it later on
+        __int32_t dimensions[] = {fN, fileWidth, fileHeight};
+        fwrite(&dimensions, 3, sizeof(__int32_t), wptr); // so I can read it later on
 
         fwrite(pixelBuffer, arraySize(pixelBuffer), sizeof(pixel), wptr);
         fclose(wptr);
