@@ -45,9 +45,10 @@ int main(int argc, char *argv[])
     pixel *test = createPixelArray(width(emojiBuffer), height(emojiBuffer));
     // int index = 1968;
 
-    for (int index = 403; index <= 403; index++)
+    for (int index = 0; index < imageCount; index++)
     {
-        sleep(1);
+        usleep(1000000 / 5);
+
         printf("%d - rgba(%d, %d, %d, %d)\n", index, *((__uint8_t *)(averages + index) + 2),
                *((__uint8_t *)(averages + index) + 1), *((__uint8_t *)(averages + index)),
                *((__uint8_t *)(averages + index) + 3));
