@@ -1,5 +1,7 @@
 # Emojifier
 [Chek it out!](http://gabba.ga/files/img.png)
+![Apple](https://user-images.githubusercontent.com/12468102/163734260-885d23b4-845f-4f97-b060-282c917034d2.jpg)
+
 ## Usage
 `./emojifier [file name] {[buffer.bmp] [buffer scale factor]}`
 * argument wrapped in `{}` are optional and only need to be set if generating your own buffer
