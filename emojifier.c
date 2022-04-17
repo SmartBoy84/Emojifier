@@ -71,11 +71,19 @@ int main(int argc, char *argv[])
 
         int32_t emojiSize = height(emojiBuffer) * width(emojiBuffer); // get pixel # per image
 
+        // enable transparency
+        pixel *transparent = createPixelArray(width(emoji), height(emoji));
+        for (int i = 0; i < width(emoji) * height(emoji); i++)
+            (transparent + i)->alpha = 0;
+
         for (int y = 0; y < height(Image); y++)
         {
             for (int x = 0; x < width(Image); x++)
             {
-                memcpy(emoji, emojiBuffer + (findEmoji(tempImage, averages, imageCount) * emojiSize),
+
+                memcpy(emoji,
+                       tempImage->alpha == 0 ? transparent
+                                             : emojiBuffer + (findEmoji(tempImage, averages, imageCount) * emojiSize),
                        emojiSize * sizeof(pixel));
 
                 tempEmoji = emoji;
