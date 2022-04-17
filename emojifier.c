@@ -4,11 +4,10 @@
 
 #define defaultScale 3
 
-// fread() MOVES THE DAMN POINTER
-
 int main(int argc, char *argv[])
 {
     pixel *Image;
+
     if (argc < 2 || !(Image = readFile(argv[1])))
         return 1;
 
@@ -31,14 +30,69 @@ int main(int argc, char *argv[])
     pixel *emojiBuffer;
     pixel *averages;
 
-    pixel *imageBuffer;
-
     readBuffer(eF, &imageCount, &emojiBuffer, &averages);
 
-    __int32_t imageSize = height(emojiBuffer) * width(emojiBuffer); // get pixel # per image
+    printf("Height: %d\nWidth: %d\nEmoji count: %d\n", height(emojiBuffer), width(emojiBuffer), imageCount);
 
-    printf("Height: %d\nWidth: %d\nEmoji count: %d\nEmoji pixel: %d\n", height(emojiBuffer), width(emojiBuffer),
-           imageCount, imageSize);
+    // CREATE THE DAMNED IMAGE NOW
+    pixel *finalCanvas =
+        createPixelArray(width(Image) * width(emojiBuffer),
+                         height(Image) * height(emojiBuffer)); // Remember height(emojiBuffer) return that of one
+
+    printf("\nImage size: %dx%d\nCanvas size: %dx%d\n", width(Image), height(Image), width(finalCanvas),
+           height(finalCanvas));
+
+    pixel *emoji = createPixelArray(height(emojiBuffer), width(emojiBuffer)); // emoji matching average colour
+
+    // create reference pointers
+    pixel *tempImage = Image;
+    pixel *tempCanvas = finalCanvas; // temp buffer for canvas
+    pixel *tempEmoji;
+
+    pixel *tempInternalCanvas = finalCanvas;
+
+    __int32_t emojiSize = height(emojiBuffer) * width(emojiBuffer); // get pixel # per image
+
+    for (int y = 0; y < height(Image); y++)
+    {
+        for (int x = 0; x < width(Image); x++)
+        {
+            memcpy(emoji, emojiBuffer + (findEmoji(tempImage, averages, imageCount) * emojiSize),
+                   emojiSize * sizeof(pixel));
+
+            tempEmoji = emoji;
+            tempInternalCanvas = tempCanvas;
+
+            for (int i = 0; i < height(emoji); i++)
+            {
+                memcpy(tempInternalCanvas, tempEmoji, width(emoji) * sizeof(pixel));
+
+                tempEmoji += width(emoji);
+                tempInternalCanvas += width(finalCanvas);
+            }
+
+            tempImage++;
+            tempCanvas += width(emoji);
+        }
+
+        tempCanvas += (width(finalCanvas) * (height(emoji) - 1));
+    }
+
+    writeArray(finalCanvas, "output.bmp");
+
+    // read test image
+    /* pixel *test = createPixelArray(width(emojiBuffer), height(emojiBuffer));
+
+    int index = 1;
+
+    pixel *averageStrip = createPixelArray(width(emojiBuffer), 3);
+    for (int z = 0; z < width(averageStrip) * height(averageStrip); z++)
+        *(averageStrip + z) = *(averages + index);
+
+    memcpy(test, emojiBuffer + (imageSize * index), imageSize * sizeof(pixel));
+    memcpy(test, averageStrip, width(averageStrip) * height(averageStrip) * sizeof(pixel));
+
+    writeArray(test, "test.bmp"); */
 
     return 0;
 }

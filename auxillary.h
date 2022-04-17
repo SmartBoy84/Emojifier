@@ -7,7 +7,7 @@
 
 int generateChart(__uint8_t scale)
 {
-    printf("Generating auxillary buffers...");
+    printf("Generating auxillary buffers...\n");
 
     DIR *dir = opendir("emojis");
 
@@ -53,10 +53,12 @@ int generateChart(__uint8_t scale)
             strcat(fileName, ".bmp");
 
             // try to read file
-            pixel *fileBuffer;
-
-            if (fileBuffer = readFile(fileName))
+            pixel *fileBuffer = calloc(fWidth * fHeight, sizeof(pixel));
+            pixel *tempBuffer;
+            if (tempBuffer = readFile(fileName))
             {
+                memcpy(fileBuffer, tempBuffer, fWidth * fHeight * sizeof(pixel));
+
                 __uint32_t averages[3] = {0};
                 __uint32_t averageCount = 0;
                 __uint8_t *colorBuffer;
@@ -125,6 +127,7 @@ int generateChart(__uint8_t scale)
         fwrite(&dimensions, 3, sizeof(__int32_t), wptr); // so I can read it later on
 
         fwrite(pixelBuffer, arraySize(pixelBuffer), sizeof(pixel), wptr);
+
         fclose(wptr);
 
         return 0;

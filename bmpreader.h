@@ -41,29 +41,28 @@ int getInfo(char *name, __uint32_t *offset, __int32_t *width, __int32_t *height)
     FILE *info;
     char magicBytes[2] = {0};
 
-    if (!(info = fopen(name, "rb")))
+    if (info = fopen(name, "rb"))
     {
-        return 1;
+        fread(&magicBytes, sizeof(char), 2, info);
+        if (magicBytes[0] == 'B' && magicBytes[1] == 'M')
+        {
+
+            fseek(info, fOffsetOffset, SEEK_SET);
+            fread(offset, sizeof(__uint32_t), 1, info);
+
+            // read height and width from file
+            fseek(info, fWidthOffset, SEEK_SET);
+            fread(width, sizeof(__int32_t), 1, info);
+
+            fread(height, sizeof(__int32_t), 1, info);
+
+            fclose(info);
+
+            return 0;
+        }
     }
 
-    fread(&magicBytes, sizeof(char), 2, info);
-    if (magicBytes[0] != 'B' || magicBytes[1] != 'M')
-    {
-        return 1;
-    }
-
-    fseek(info, fOffsetOffset, SEEK_SET);
-    fread(offset, sizeof(__uint32_t), 1, info);
-
-    // read height and width from file
-    fseek(info, fWidthOffset, SEEK_SET);
-    fread(width, sizeof(__int32_t), 1, info);
-
-    fseek(info, fWidthOffset + sizeof(__int32_t), SEEK_SET);
-    fread(height, sizeof(__int32_t), 1, info);
-
-    fclose(info);
-    return 0;
+    return 1;
 }
 
 pixel *readFile(char *fileName)
@@ -79,10 +78,10 @@ pixel *readFile(char *fileName)
         if (!getInfo(fileName, &fOffset, &fWidth, &fHeight))
         { // check to see if it is actually a bmp
 
-            pixel *fileBuffer = calloc(fWidth * fHeight, sizeof(pixel));
+            pixel *fileBuffer = createPixelArray(fWidth, fHeight);
 
             fseek(rptr, fOffset, SEEK_SET);
-            size_t success = fread(fileBuffer, sizeof(pixel), fWidth * fHeight, rptr);
+            fread(fileBuffer, sizeof(pixel), fWidth * fHeight, rptr);
             fclose(rptr);
 
             return fileBuffer;
@@ -92,7 +91,7 @@ pixel *readFile(char *fileName)
     }
     else
         printf("File doesn't exist: %s\n", fileName);
-    
+
     return NULL;
 }
 

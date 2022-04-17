@@ -1,1 +1,1 @@
-gcc emojifier.c -o emojifier -lm
+gcc emojifier.c -o emojifier -lm -g
