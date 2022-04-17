@@ -1,4 +1,8 @@
 # Emojifier
+## Usage
+`./emojifier [file name] {[buffer.bmp] [buffer scale factor]}`
+Use convertimg.sh to convert to compatible 32bit bmp and compress afterwards if needed
+
 ## Dev instructions
 1. Clone [this](https://github.com/SmartBoy84/EmojiScraper) and change line 27 of convert.js so that the BMP file names are only indexes.
 2. After running convert, move all the images from emojis/Apple into emojis and remove all other folders
