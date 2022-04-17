@@ -78,16 +78,17 @@ pixel *readFile(char *fileName)
         __int32_t fHeight;
         __uint32_t fOffset;
 
-        if (getInfo(fileName, &fOffset, &fWidth, &fHeight)) // check to see if it is actually a bmp
-            return;
+        if (!getInfo(fileName, &fOffset, &fWidth, &fHeight))
+        { // check to see if it is actually a bmp
 
-        pixel *fileBuffer = calloc(fWidth * fHeight, sizeof(pixel));
+            pixel *fileBuffer = calloc(fWidth * fHeight, sizeof(pixel));
 
-        fseek(rptr, fOffset, SEEK_SET);
-        size_t success = fread(fileBuffer, sizeof(pixel), fWidth * fHeight, rptr);
-        fclose(rptr);
+            fseek(rptr, fOffset, SEEK_SET);
+            size_t success = fread(fileBuffer, sizeof(pixel), fWidth * fHeight, rptr);
+            fclose(rptr);
 
-        return fileBuffer;
+            return fileBuffer;
+        }
     }
 }
 
