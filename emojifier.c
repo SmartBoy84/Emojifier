@@ -80,19 +80,5 @@ int main(int argc, char *argv[])
 
     writeArray(finalCanvas, "output.bmp");
 
-    // read test image
-    /* pixel *test = createPixelArray(width(emojiBuffer), height(emojiBuffer));
-
-    int index = 1;
-
-    pixel *averageStrip = createPixelArray(width(emojiBuffer), 3);
-    for (int z = 0; z < width(averageStrip) * height(averageStrip); z++)
-        *(averageStrip + z) = *(averages + index);
-
-    memcpy(test, emojiBuffer + (imageSize * index), imageSize * sizeof(pixel));
-    memcpy(test, averageStrip, width(averageStrip) * height(averageStrip) * sizeof(pixel));
-
-    writeArray(test, "test.bmp"); */
-
     return 0;
 }
