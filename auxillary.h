@@ -1,13 +1,29 @@
-#include <stdint.h>
-#include <dirent.h>
-#include <math.h>
 #include "bmpcreator.h"
 #include "bmpreader.h"
+#include <dirent.h>
+#include <math.h>
+#include <stdint.h>
 
+char fileName[100];
 
-int generateChart(char* name, uint8_t scale, int fN)
+char *createName(int index, char *folder)
 {
-    printf("Generating %s - scale: %d, file number: %d ...\n", name, scale, fN);
+    // come onnnn c jesus
+    char *name = calloc(100, sizeof(char));
+    memset(fileName, 0, 100 * sizeof(char));
+
+    strcat(fileName, folder);
+    strcat(fileName, "/");
+    sprintf(name, "%d", index);
+    strcat(fileName, name);
+    strcat(fileName, ".bmp");
+
+    return fileName;
+}
+
+char* generateChart(char *bufferName, char *emojisFolder, uint8_t scale, int fN)
+{
+    printf("Generating auxillary buffers %s[.bin & .bmp]\nScale: %d, file count: %d\n", bufferName, scale, fN);
 
     DIR *dir = opendir("emojis");
 
@@ -17,16 +33,16 @@ int generateChart(char* name, uint8_t scale, int fN)
         int32_t fHeight;
         uint32_t fOffset;
 
-        if (getInfo("emojis/1.bmp", &fOffset, &fWidth, &fHeight))
+        if (getInfo(createName(1, emojisFolder), &fOffset, &fWidth, &fHeight))
         {
-            printf("No file in emojis folder?");
-            return 1;
+            printf("No file in emojis folder?\n");
+            return NULL;
         }
 
         if (scale > 1 && (fWidth % scale != 0 || fHeight % scale != 0))
         {
-            printf("Unsupported scale factor - should be 2, 3, 4, 6, 8, 9, 12, 18, 26, 36");
-            return 1;
+            printf("%dx%d not scalable by factor %d\n", fWidth, fHeight, scale);
+            return NULL;
         }
 
         int32_t aWidth = sqrt(fN) + 1;
@@ -45,17 +61,11 @@ int generateChart(char* name, uint8_t scale, int fN)
 
         for (int i = 1; i <= fN; i++)
         {
-            // set name
-            char name[100];
-            char fileName[100] = "emojis/";
-            sprintf(name, "%d", i);
-            strcat(fileName, name);
-            strcat(fileName, ".bmp");
-
             // try to read file
             pixel *fileBuffer = calloc(fWidth * fHeight, sizeof(pixel));
             pixel *tempBuffer;
-            if (tempBuffer = readFile(fileName))
+
+            if (tempBuffer = readFile(createName(i, emojisFolder)))
             {
                 memcpy(fileBuffer, tempBuffer, fWidth * fHeight * sizeof(pixel));
 
@@ -111,17 +121,22 @@ int generateChart(char* name, uint8_t scale, int fN)
                 tempPixelChart += i % aWidth == 0 ? width(pixelChart) * (fileHeight - 1) : fileWidth;
             }
             else
-            {
-                printf("Missing %s", fileName);
-                return 1;
-            }
+                return NULL;
         }
 
         // write chart
-        writeArray(pixelChart, "emojichart.bmp");
+        memset(fileName, 0, 100 * sizeof(char));
+        strcat(fileName, bufferName);
+        strcat(fileName, ".bmp");
+
+        writeArray(pixelChart, fileName);
 
         // populate raw rgb file
-        FILE *wptr = fopen(name, "wb");
+        memset(fileName, 0, 100 * sizeof(char));
+        strcat(fileName, bufferName);
+        strcat(fileName, ".bin");
+
+        FILE *wptr = fopen(fileName, "wb");
 
         int32_t dimensions[] = {fN, fileWidth, fileHeight};
         fwrite(&dimensions, 3, sizeof(int32_t), wptr); // so I can read it later on
@@ -130,11 +145,11 @@ int generateChart(char* name, uint8_t scale, int fN)
 
         fclose(wptr);
 
-        return 0;
+        return fileName;
     }
     else
     {
-        printf("Emojis directory doesn't exist");
-        return 1;
+        printf("%s doesn't exist", emojisFolder);
+        return NULL;
     }
 }

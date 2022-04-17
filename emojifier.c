@@ -1,9 +1,14 @@
 #include "auxillary.h"
 #include "bmpreader.h"
 #include "buffer.c"
-#include "stdint.h"
+#include <stdint.h>
 
 #define defaultScale 3
+#define printHelp()                                                                                                    \
+    {                                                                                                                  \
+        printf("emojifier [file name] {[buffer name]} {[emojis folder] [buffer resolution] [file count]}\n");          \
+        return 1;                                                                                                      \
+    }
 
 int main(int argc, char *argv[])
 {
@@ -13,34 +18,41 @@ int main(int argc, char *argv[])
     pixel *averages;
 
     if (argc == 1)
-    {
-        printf("emojifier [file name] {[buffer name] [buffer resolution] [file count]}\n");
-        return 0;
-    }
+        printHelp();
 
     if (argc == 2)
         readInternalBuffer(internalBuffer, &imageCount, &emojiBuffer, &averages);
 
     else if (argc == 4)
     {
-        printf("Must specify number of images in directory\n");
-        return 1;
+        printf("Must specify bitmap scale\n\n");
+        printHelp();
+    }
+    else if (argc == 5)
+    {
+        printf("Must specify number of images in directory\n\n");
+        printHelp();
+    }
+    else if (argc > 6)
+    {
+        printHelp();
     }
     else
     {
         FILE *eF;
+        char *fileName;
 
-        if (argc >= 5 && generateChart(argv[2], atoi(argv[3]), atoi(argv[4])))
+        if (argc == 6 && !(fileName = generateChart(argv[2], argv[3], atoi(argv[4]), atoi(argv[5]))))
         {
-            printf("Failed to generate buffer\n");
+            printf("\nFailed to generate buffer\n");
             return 1;
         }
 
-        if (eF = fopen(argv[2], "rb"))
+        if (eF = fopen(fileName, "rb"))
             readBufferFile(eF, &imageCount, &emojiBuffer, &averages);
         else
         {
-            printf("Failed to read buffer %s\n", argv[2]);
+            printf("\nFailed to read buffer %s\n", argv[2]);
             return 1;
         }
     }
