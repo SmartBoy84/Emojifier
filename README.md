@@ -1,5 +1,5 @@
 # Emojifier
-[Checkout the preview](https://github.com/SmartBoy84/Emojifier/raw/img_holder/img.png)
+[Checkout the preview](http://gabba.ga/files/img.png)
 ## Usage
 `./emojifier [file name] {[buffer.bmp] [buffer scale factor]}`
 * argument wrapped in `{}` are optional and only need to be set if generating your own buffer
