@@ -3,11 +3,9 @@
 #include <dirent.h>
 #include <math.h>
 
-#define fN 3301
-
-int generateChart(__uint8_t scale)
+int generateChart(char* name, __uint8_t scale, int fN)
 {
-    printf("Generating auxillary buffers...\n");
+    printf("Generating %s - scale: %d, file number: %d ...\n", name, scale, fN);
 
     DIR *dir = opendir("emojis");
 
@@ -121,7 +119,7 @@ int generateChart(__uint8_t scale)
         writeArray(pixelChart, "emojichart.bmp");
 
         // populate raw rgb file
-        FILE *wptr = fopen("emojis.bin", "wb");
+        FILE *wptr = fopen(name, "wb");
 
         __int32_t dimensions[] = {fN, fileWidth, fileHeight};
         fwrite(&dimensions, 3, sizeof(__int32_t), wptr); // so I can read it later on

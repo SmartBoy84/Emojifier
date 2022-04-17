@@ -1,35 +1,54 @@
 #include "auxillary.h"
 #include "bmpreader.h"
+#include "buffer.c"
 #include <time.h>
 
 #define defaultScale 3
 
 int main(int argc, char *argv[])
 {
-    FILE *eF;
-    if (argc >= 3)
-        generateChart(atoi(argv[2]));
+    // 1 - file name, 2 - buffer name, 3 - buffer resolution, 4 - file count
+    __int32_t imageCount;
+    pixel *emojiBuffer;
+    pixel *averages;
 
-    if (!(eF = fopen("emojis.bin", "rb")))
+    if (argc == 1)
     {
-        if (generateChart(defaultScale))
+        printf("emojifier [file name] {[buffer name] [buffer resolution] [file count]}\n");
+        return 0;
+    }
+
+    if (argc == 2)
+        readInternalBuffer(internalBuffer, &imageCount, &emojiBuffer, &averages);
+
+    else if (argc == 4)
+    {
+        printf("Must specify number of images in directory\n");
+        return 1;
+    }
+    else
+    {
+        FILE *eF;
+
+        if (argc >= 5 && generateChart(argv[2], atoi(argv[3]), atoi(argv[4])))
         {
-            printf("Failed to find %s, exiting", "emojis.bin");
+            printf("Failed to generate buffer\n");
             return 1;
         }
+
+        if (eF = fopen(argv[2], "rb"))
+            readBufferFile(eF, &imageCount, &emojiBuffer, &averages);
         else
-            eF = fopen("emojis.bin", "rb");
+        {
+            printf("Failed to read buffer %s\n", argv[2]);
+            return 1;
+        }
     }
 
     pixel *Image;
 
-    if (argc >= 2 && (Image = readFile(argv[1])))
+    if (Image = readFile(argv[1]))
     {
-        __int32_t imageCount;
-        pixel *emojiBuffer;
-        pixel *averages;
-
-        readBuffer(eF, &imageCount, &emojiBuffer, &averages);
 
         printf("Height: %d\nWidth: %d\nEmoji count: %d\n", height(emojiBuffer), width(emojiBuffer), imageCount);
 

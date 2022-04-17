@@ -4,8 +4,35 @@
 #include "bmpcreator.h"
 #include "math.h"
 
+void readInternalBuffer(unsigned char *buffer, __uint32_t *iC, pixel **eBuffer, pixel **aBuffer)
+{
+    *iC = *((__uint32_t *)buffer);
+    __int32_t eWidth = *((__uint32_t *)buffer + 1);
+    __int32_t eHeight = *((__uint32_t *)buffer + 2);
+
+    buffer += (sizeof(__uint32_t) * 3) / sizeof(unsigned char);
+
+    size_t rowSize = eWidth * eHeight;
+
+    *eBuffer = createPixelArray(eWidth * eHeight, *iC);
+    *aBuffer = createPixelArray(*iC, 1);
+
+    for (int i = 0; i < *iC; i++)
+    {
+        memcpy(*eBuffer + (rowSize * i), buffer, sizeof(pixel) * rowSize);
+        buffer += (sizeof(pixel) * rowSize) / sizeof(unsigned char);
+
+        memcpy(*aBuffer + i, buffer, sizeof(pixel));
+        buffer += (sizeof(pixel)) / sizeof(unsigned char);
+    }
+
+    // set dimensions in the buffer for easy access later
+    *((__int32_t *)*eBuffer - 1) = (__int32_t)eHeight; // change height var of array to height of each image
+    *((__int32_t *)*eBuffer - 2) = (__int32_t)eWidth;  // change height var of array to height of each image
+}
+
 // double for buffers because we want access to the pointer value not the pointer to
-void readBuffer(FILE *file, __uint32_t *iC, pixel **eBuffer, pixel **aBuffer)
+void readBufferFile(FILE *file, __uint32_t *iC, pixel **eBuffer, pixel **aBuffer)
 {
 
     fread(iC, sizeof(__int32_t), 1, file);
