@@ -1,14 +1,14 @@
 #include "auxillary.h"
 #include "bmpreader.h"
 #include "buffer.c"
-#include <time.h>
+#include "stdint.h"
 
 #define defaultScale 3
 
 int main(int argc, char *argv[])
 {
     // 1 - file name, 2 - buffer name, 3 - buffer resolution, 4 - file count
-    __int32_t imageCount;
+    int32_t imageCount;
     pixel *emojiBuffer;
     pixel *averages;
 
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 
         pixel *tempInternalCanvas = finalCanvas;
 
-        __int32_t emojiSize = height(emojiBuffer) * width(emojiBuffer); // get pixel # per image
+        int32_t emojiSize = height(emojiBuffer) * width(emojiBuffer); // get pixel # per image
 
         for (int y = 0; y < height(Image); y++)
         {

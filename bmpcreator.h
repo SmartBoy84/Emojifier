@@ -4,27 +4,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #define fOffsetOffset 10
 #define fWidthOffset 18
 
 typedef struct
 {
-    __uint8_t blue;
-    __uint8_t green;
-    __uint8_t red;
-    __uint8_t alpha;
+    uint8_t blue;
+    uint8_t green;
+    uint8_t red;
+    uint8_t alpha;
 } pixel;
 
-static inline __int32_t height(pixel *pixels)
+static inline int32_t height(pixel *pixels)
 {
-    return *((__int32_t *)pixels - 1);
+    return *((int32_t *)pixels - 1);
 }
-static inline __int32_t width(pixel *pixels)
+static inline int32_t width(pixel *pixels)
 {
-    return *((__int32_t *)pixels - 2);
+    return *((int32_t *)pixels - 2);
 }
-static inline __int32_t arraySize(pixel *pixels)
+static inline int32_t arraySize(pixel *pixels)
 {
     return height(pixels) * width(pixels);
 }
@@ -33,9 +34,9 @@ static inline __int32_t arraySize(pixel *pixels)
 struct
 {                        // File header (14 bytes)
     char magicBytes[2];  // BM
-    __uint32_t fileSize; // in bytes
-    __uint32_t reserved; // ignore - 0
-    __uint32_t offset;   // offset to pixel array
+    uint32_t fileSize; // in bytes
+    uint32_t reserved; // ignore - 0
+    uint32_t offset;   // offset to pixel array
 } FileHeader = {
     .magicBytes = "BM",
     .fileSize = 0, // pixelarraysize + total headersize - placeholder
@@ -45,31 +46,31 @@ struct
 
 struct
 {                          // BITMAPINFOHEADER 61
-    __uint32_t headerSize; // from this point onwards
+    uint32_t headerSize; // from this point onwards
 
-    __int32_t width; // in pixels
-    __int32_t height;
+    int32_t width; // in pixels
+    int32_t height;
 
-    __uint16_t colorPlanes; // 1
-    __uint16_t bitDepth;    // 32
+    uint16_t colorPlanes; // 1
+    uint16_t bitDepth;    // 32
 
-    __uint32_t compression; // 3
-    __uint32_t bitmapSize;  // size of pixel array (bytes)
+    uint32_t compression; // 3
+    uint32_t bitmapSize;  // size of pixel array (bytes)
 
-    __int32_t horizontalResolution; // print resolution
-    __int32_t verticalResolution;
+    int32_t horizontalResolution; // print resolution
+    int32_t verticalResolution;
 
-    __uint32_t colorPaletteSize;    // ignore - 0
-    __uint32_t importantColorsSize; // ignore - 0
+    uint32_t colorPaletteSize;    // ignore - 0
+    uint32_t importantColorsSize; // ignore - 0
 
-    __uint32_t redBitMask; // set one bit to 256 [0xFF]
-    __uint32_t greenBitMask;
-    __uint32_t blueBitMask;
-    __uint32_t alphaBitMask;
+    uint32_t redBitMask; // set one bit to 256 [0xFF]
+    uint32_t greenBitMask;
+    uint32_t blueBitMask;
+    uint32_t alphaBitMask;
 
     char colorSpace[4]; // little-endia sRGB (inversed - BGRs)
 
-    __uint8_t colorSpaceEndpoints[48]; // weird technical stuff - ignore
+    uint8_t colorSpaceEndpoints[48]; // weird technical stuff - ignore
 } InfoHeader = {.headerSize = 108,
 
                 .width = 0,  // place holder
@@ -95,9 +96,9 @@ struct
 
 size_t headerSize = sizeof(FileHeader) + sizeof(InfoHeader);
 
-char *getHeader(__int32_t width, __int32_t height)
+char *getHeader(int32_t width, int32_t height)
 {
-    __uint32_t pixelArraySize = width * height * 4; // 4 bytes per pixel
+    uint32_t pixelArraySize = width * height * 4; // 4 bytes per pixel
 
     FileHeader.fileSize = FileHeader.offset + pixelArraySize;
 
@@ -114,18 +115,18 @@ char *getHeader(__int32_t width, __int32_t height)
     return buffer;
 }
 
-pixel *createPixelArray(__int32_t width, __int32_t height)
+pixel *createPixelArray(int32_t width, int32_t height)
 {
-    size_t dimension = (size_t)sizeof(__int32_t) / sizeof(pixel); // make room for the dimensions at the start
+    size_t dimension = (size_t)sizeof(int32_t) / sizeof(pixel); // make room for the dimensions at the start
 
     size_t arraySize = (2 * dimension) + (width * height);
     pixel *array = calloc(arraySize, sizeof(pixel));
 
     // tuck the width and height at the back somewhere
-    memcpy(array, &width, sizeof(__int32_t));
+    memcpy(array, &width, sizeof(int32_t));
     array += dimension;
 
-    memcpy(array, &height, sizeof(__int32_t));
+    memcpy(array, &height, sizeof(int32_t));
     array += dimension;
 
     return array;

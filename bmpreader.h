@@ -1,16 +1,18 @@
 #ifndef bmpreader // prevent redefinitions
 #define bmpreader
 
+#include <math.h>
+#include <stdint.h>
 #include "bmpcreator.h"
-#include "math.h"
 
-void readInternalBuffer(unsigned char *buffer, __uint32_t *iC, pixel **eBuffer, pixel **aBuffer)
+
+void readInternalBuffer(unsigned char *buffer, uint32_t *iC, pixel **eBuffer, pixel **aBuffer)
 {
-    *iC = *((__uint32_t *)buffer);
-    __int32_t eWidth = *((__uint32_t *)buffer + 1);
-    __int32_t eHeight = *((__uint32_t *)buffer + 2);
+    *iC = *((uint32_t *)buffer);
+    int32_t eWidth = *((int32_t *)buffer + 1);
+    int32_t eHeight = *((int32_t *)buffer + 2);
 
-    buffer += (sizeof(__uint32_t) * 3) / sizeof(unsigned char);
+    buffer += (sizeof(uint32_t) * 3) / sizeof(unsigned char);
 
     size_t rowSize = eWidth * eHeight;
 
@@ -27,22 +29,22 @@ void readInternalBuffer(unsigned char *buffer, __uint32_t *iC, pixel **eBuffer, 
     }
 
     // set dimensions in the buffer for easy access later
-    *((__int32_t *)*eBuffer - 1) = (__int32_t)eHeight; // change height var of array to height of each image
-    *((__int32_t *)*eBuffer - 2) = (__int32_t)eWidth;  // change height var of array to height of each image
+    *((int32_t *)*eBuffer - 1) = (int32_t)eHeight; // change height var of array to height of each image
+    *((int32_t *)*eBuffer - 2) = (int32_t)eWidth;  // change height var of array to height of each image
 }
 
 // double for buffers because we want access to the pointer value not the pointer to
-void readBufferFile(FILE *file, __uint32_t *iC, pixel **eBuffer, pixel **aBuffer)
+void readBufferFile(FILE *file, uint32_t *iC, pixel **eBuffer, pixel **aBuffer)
 {
 
-    fread(iC, sizeof(__int32_t), 1, file);
+    fread(iC, sizeof(int32_t), 1, file);
 
     // get the width and height of the images from file
-    __int32_t eWidth;
-    fread(&eWidth, sizeof(__int32_t), 1, file);
+    int32_t eWidth;
+    fread(&eWidth, sizeof(int32_t), 1, file);
 
-    __int32_t eHeight;
-    fread(&eHeight, sizeof(__int32_t), 1, file);
+    int32_t eHeight;
+    fread(&eHeight, sizeof(int32_t), 1, file);
 
     // extract image buffers and averages
     size_t rowSize = eWidth * eHeight;
@@ -59,11 +61,11 @@ void readBufferFile(FILE *file, __uint32_t *iC, pixel **eBuffer, pixel **aBuffer
     fclose(file);
 
     // set dimensions in the buffer for easy access later
-    *((__int32_t *)*eBuffer - 1) = (__int32_t)eHeight; // change height var of array to height of each image
-    *((__int32_t *)*eBuffer - 2) = (__int32_t)eWidth;  // change height var of array to height of each image
+    *((int32_t *)*eBuffer - 1) = (int32_t)eHeight; // change height var of array to height of each image
+    *((int32_t *)*eBuffer - 2) = (int32_t)eWidth;  // change height var of array to height of each image
 }
 
-int getInfo(char *name, __uint32_t *offset, __int32_t *width, __int32_t *height)
+int getInfo(char *name, uint32_t *offset, int32_t *width, int32_t *height)
 {
     FILE *info;
     char magicBytes[2] = {0};
@@ -75,13 +77,13 @@ int getInfo(char *name, __uint32_t *offset, __int32_t *width, __int32_t *height)
         {
 
             fseek(info, fOffsetOffset, SEEK_SET);
-            fread(offset, sizeof(__uint32_t), 1, info);
+            fread(offset, sizeof(uint32_t), 1, info);
 
             // read height and width from file
             fseek(info, fWidthOffset, SEEK_SET);
-            fread(width, sizeof(__int32_t), 1, info);
+            fread(width, sizeof(int32_t), 1, info);
 
-            fread(height, sizeof(__int32_t), 1, info);
+            fread(height, sizeof(int32_t), 1, info);
 
             fclose(info);
 
@@ -98,9 +100,9 @@ pixel *readFile(char *fileName)
 
     if (rptr = fopen(fileName, "rb"))
     {
-        __int32_t fWidth;
-        __int32_t fHeight;
-        __uint32_t fOffset;
+        int32_t fWidth;
+        int32_t fHeight;
+        uint32_t fOffset;
 
         if (!getInfo(fileName, &fOffset, &fWidth, &fHeight))
         { // check to see if it is actually a bmp
@@ -122,19 +124,19 @@ pixel *readFile(char *fileName)
     return NULL;
 }
 
-int findEmoji(pixel *colour, pixel *averages, __int32_t eCount)
+int findEmoji(pixel *colour, pixel *averages, int32_t eCount)
 {
     pixel closest = {0};
-    __uint32_t difference = 0; // set to minimum value
+    uint32_t difference = 0; // set to minimum value
 
     int index = 0;
-    __uint32_t sum = 0;
+    uint32_t sum = 0;
 
     for (int i = 0; i < eCount; i++)
     {
         if (averages->alpha > 0) // if not transparent
         {
-            sum = (__uint32_t)(255 - abs(averages->blue - colour->blue)) *
+            sum = (uint32_t)(255 - abs(averages->blue - colour->blue)) *
                   (255 - abs(averages->green - colour->green)) *
                   (255 - abs(averages->red -
                              colour->red)); // basically returns the same as finding different in euclidiean space

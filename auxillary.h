@@ -1,9 +1,11 @@
-#include "bmpcreator.h"
-#include "bmpreader.h"
+#include <stdint.h>
 #include <dirent.h>
 #include <math.h>
+#include "bmpcreator.h"
+#include "bmpreader.h"
 
-int generateChart(char* name, __uint8_t scale, int fN)
+
+int generateChart(char* name, uint8_t scale, int fN)
 {
     printf("Generating %s - scale: %d, file number: %d ...\n", name, scale, fN);
 
@@ -11,9 +13,9 @@ int generateChart(char* name, __uint8_t scale, int fN)
 
     if (dir)
     {
-        __int32_t fWidth;
-        __int32_t fHeight;
-        __uint32_t fOffset;
+        int32_t fWidth;
+        int32_t fHeight;
+        uint32_t fOffset;
 
         if (getInfo("emojis/1.bmp", &fOffset, &fWidth, &fHeight))
         {
@@ -27,11 +29,11 @@ int generateChart(char* name, __uint8_t scale, int fN)
             return 1;
         }
 
-        __int32_t aWidth = sqrt(fN) + 1;
-        __int32_t aHeight = (fN / aWidth) + 1;
+        int32_t aWidth = sqrt(fN) + 1;
+        int32_t aHeight = (fN / aWidth) + 1;
 
-        __int32_t fileWidth = (__uint8_t)fWidth / scale;
-        __int32_t fileHeight = (__uint8_t)fHeight / scale;
+        int32_t fileWidth = (uint8_t)fWidth / scale;
+        int32_t fileHeight = (uint8_t)fHeight / scale;
 
         pixel *pixelChart = createPixelArray(fileWidth * aWidth, fileHeight * aHeight); // emoji chart
         pixel *pixelBuffer =
@@ -57,9 +59,9 @@ int generateChart(char* name, __uint8_t scale, int fN)
             {
                 memcpy(fileBuffer, tempBuffer, fWidth * fHeight * sizeof(pixel));
 
-                __uint32_t averages[3] = {0};
-                __uint32_t averageCount = 0;
-                __uint8_t *colorBuffer;
+                uint32_t averages[3] = {0};
+                uint32_t averageCount = 0;
+                uint8_t *colorBuffer;
 
                 char color = 0;
 
@@ -71,7 +73,7 @@ int generateChart(char* name, __uint8_t scale, int fN)
                             fileBuffer[(y * fileWidth) + x] = fileBuffer[(y * scale * fWidth) + (x * scale)];
 
                         // get average
-                        colorBuffer = (__uint8_t *)(fileBuffer + (y * scale * fWidth) + (x * scale));
+                        colorBuffer = (uint8_t *)(fileBuffer + (y * scale * fWidth) + (x * scale));
 
                         if (*(colorBuffer + 3) > 0)
                         {
@@ -86,7 +88,7 @@ int generateChart(char* name, __uint8_t scale, int fN)
                 pixel average = {0};
 
                 for (int i = 0; i < 3; i++)
-                    *((__uint8_t *)&average + i) = (__uint8_t)(averages[i] / averageCount);
+                    *((uint8_t *)&average + i) = (uint8_t)(averages[i] / averageCount);
 
                 // handle case where entire image is transparent
                 if (average.blue > 0 || average.green > 0 || average.red > 0)
@@ -121,8 +123,8 @@ int generateChart(char* name, __uint8_t scale, int fN)
         // populate raw rgb file
         FILE *wptr = fopen(name, "wb");
 
-        __int32_t dimensions[] = {fN, fileWidth, fileHeight};
-        fwrite(&dimensions, 3, sizeof(__int32_t), wptr); // so I can read it later on
+        int32_t dimensions[] = {fN, fileWidth, fileHeight};
+        fwrite(&dimensions, 3, sizeof(int32_t), wptr); // so I can read it later on
 
         fwrite(pixelBuffer, arraySize(pixelBuffer), sizeof(pixel), wptr);
 
