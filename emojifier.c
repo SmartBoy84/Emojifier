@@ -10,10 +10,7 @@ int main(int argc, char *argv[])
 {
     pixel *Image;
     if (argc < 2 || !(Image = readFile(argv[1])))
-    {
-        printf("File doesn't exist, exiting");
         return 1;
-    }
 
     FILE *eF;
     if (argc >= 3)

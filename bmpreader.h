@@ -43,14 +43,12 @@ int getInfo(char *name, __uint32_t *offset, __int32_t *width, __int32_t *height)
 
     if (!(info = fopen(name, "rb")))
     {
-        printf("No file in emojis folder?");
         return 1;
     }
 
     fread(&magicBytes, sizeof(char), 2, info);
     if (magicBytes[0] != 'B' || magicBytes[1] != 'M')
     {
-        printf("Malformed BMP: %s\n", name);
         return 1;
     }
 
@@ -89,7 +87,13 @@ pixel *readFile(char *fileName)
 
             return fileBuffer;
         }
+        else
+            printf("Malformed BMP: %s\n", fileName);
     }
+    else
+        printf("File doesn't exist: %s\n", fileName);
+    
+    return NULL;
 }
 
 int findEmoji(pixel *colour, pixel *averages, __int32_t eCount)
