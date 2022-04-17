@@ -1,8 +1,11 @@
 # Emojifier
+[Chek it out!](http://gabba.ga/files/img.png)
 ## Usage
 `./emojifier [file name] {[buffer.bmp] [buffer scale factor]}`
 * argument wrapped in `{}` are optional and only need to be set if generating your own buffer
-Use convertimg.sh to convert to compatible 32bit bmp and compress afterwards if needed
+Use convertimg.sh to convert to compatible 32bit bmp and compress afterwards if needed\
+
+To convert image to a compatible format install imagemagick and run `mogrify -depth 32 -alpha set -format bmp [input img]`
 
 
 ## Dev instructions
