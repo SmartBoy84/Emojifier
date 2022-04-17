@@ -1,5 +1,5 @@
 # Emojifier
-[Checkout the preview](http://gabba.ga/files/img.png)
+[Chek it out!](http://gabba.ga/files/img.png)
 ## Usage
 `./emojifier [file name] {[buffer.bmp] [buffer scale factor]}`
 * argument wrapped in `{}` are optional and only need to be set if generating your own buffer
