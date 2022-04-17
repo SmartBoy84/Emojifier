@@ -4,34 +4,6 @@
 #include "bmpcreator.h"
 #include "math.h"
 
-int findEmoji(pixel *colour, pixel *averages, __int32_t eCount)
-{
-    pixel closest = {0};
-    __uint32_t difference = 0; // set to minimum value
-
-    int index = 0;
-    __uint32_t sum = 0;
-
-    for (int i = 0; i < eCount; i++)
-    {
-        if (averages->alpha > 0) // if not transparent
-        {
-            sum = (__uint32_t)(255 - abs(averages->blue - colour->blue)) *
-                  (255 - abs(averages->green - colour->green)) * (255 - abs(averages->red - colour->red)); // basically returns the same as finding different in euclidiean space
-
-            if (sum > difference)
-            {
-                index = i;
-                difference = sum;
-            }
-        }
-
-        averages++;
-    }
-
-    return index;
-}
-
 // double for buffers because we want access to the pointer value not the pointer to
 void readBuffer(FILE *file, __uint32_t *iC, pixel **eBuffer, pixel **aBuffer)
 {
@@ -44,8 +16,6 @@ void readBuffer(FILE *file, __uint32_t *iC, pixel **eBuffer, pixel **aBuffer)
 
     __int32_t eHeight;
     fread(&eHeight, sizeof(__int32_t), 1, file);
-
-    printf("%d %d", eWidth, eHeight);
 
     // extract image buffers and averages
     size_t rowSize = eWidth * eHeight;
@@ -69,10 +39,18 @@ void readBuffer(FILE *file, __uint32_t *iC, pixel **eBuffer, pixel **aBuffer)
 int getInfo(char *name, __uint32_t *offset, __int32_t *width, __int32_t *height)
 {
     FILE *info;
+    char magicBytes[2] = {0};
 
     if (!(info = fopen(name, "rb")))
     {
         printf("No file in emojis folder?");
+        return 1;
+    }
+
+    fread(&magicBytes, sizeof(char), 2, info);
+    if (magicBytes[0] != 'B' || magicBytes[1] != 'M')
+    {
+        printf("Malformed BMP: %s\n", name);
         return 1;
     }
 
@@ -88,5 +66,58 @@ int getInfo(char *name, __uint32_t *offset, __int32_t *width, __int32_t *height)
 
     fclose(info);
     return 0;
+}
+
+pixel *readFile(char *fileName)
+{
+    FILE *rptr; // read pointer
+
+    if (rptr = fopen(fileName, "rb"))
+    {
+        __int32_t fWidth;
+        __int32_t fHeight;
+        __uint32_t fOffset;
+
+        if (getInfo(fileName, &fOffset, &fWidth, &fHeight)) // check to see if it is actually a bmp
+            return;
+
+        pixel *fileBuffer = calloc(fWidth * fHeight, sizeof(pixel));
+
+        fseek(rptr, fOffset, SEEK_SET);
+        size_t success = fread(fileBuffer, sizeof(pixel), fWidth * fHeight, rptr);
+        fclose(rptr);
+
+        return fileBuffer;
+    }
+}
+
+int findEmoji(pixel *colour, pixel *averages, __int32_t eCount)
+{
+    pixel closest = {0};
+    __uint32_t difference = 0; // set to minimum value
+
+    int index = 0;
+    __uint32_t sum = 0;
+
+    for (int i = 0; i < eCount; i++)
+    {
+        if (averages->alpha > 0) // if not transparent
+        {
+            sum = (__uint32_t)(255 - abs(averages->blue - colour->blue)) *
+                  (255 - abs(averages->green - colour->green)) *
+                  (255 - abs(averages->red -
+                             colour->red)); // basically returns the same as finding different in euclidiean space
+
+            if (sum > difference)
+            {
+                index = i;
+                difference = sum;
+            }
+        }
+
+        averages++;
+    }
+
+    return index;
 }
 #endif /* !FILE_FOO_SEEN */

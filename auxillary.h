@@ -53,16 +53,10 @@ int generateChart(__uint8_t scale)
             strcat(fileName, ".bmp");
 
             // try to read file
-            FILE *rptr; // read pointer
+            pixel *fileBuffer;
 
-            if (rptr = fopen(fileName, "rb"))
+            if (fileBuffer = readFile(fileName))
             {
-                pixel *fileBuffer = calloc(fWidth * fHeight, sizeof(pixel));
-
-                fseek(rptr, fOffset, SEEK_SET);
-                size_t success = fread(fileBuffer, sizeof(pixel), fWidth * fHeight, rptr);
-                fclose(rptr);
-
                 __uint32_t averages[3] = {0};
                 __uint32_t averageCount = 0;
                 __uint8_t *colorBuffer;
