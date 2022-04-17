@@ -2,9 +2,38 @@
 #define bmpreader
 
 #include "bmpcreator.h"
+#include "math.h"
+
+int findEmoji(pixel *colour, pixel *averages, __int32_t eCount)
+{
+    pixel closest = {0};
+    __uint32_t difference = 0; // set to minimum value
+
+    int index = 0;
+    __uint32_t sum = 0;
+
+    for (int i = 0; i < eCount; i++)
+    {
+        if (averages->alpha > 0) // if not transparent
+        {
+            sum = (__uint32_t)(255 - abs(averages->blue - colour->blue)) *
+                  (255 - abs(averages->green - colour->green)) * (255 - abs(averages->red - colour->red)); // basically returns the same as finding different in euclidiean space
+
+            if (sum > difference)
+            {
+                index = i;
+                difference = sum;
+            }
+        }
+
+        averages++;
+    }
+
+    return index;
+}
 
 // double for buffers because we want access to the pointer value not the pointer to
-void *readBuffer(FILE *file, __uint32_t *iC, pixel **eBuffer, pixel **aBuffer)
+void readBuffer(FILE *file, __uint32_t *iC, pixel **eBuffer, pixel **aBuffer)
 {
 
     fread(iC, sizeof(__int32_t), 1, file);

@@ -45,23 +45,25 @@ int main(int argc, char *argv[])
     pixel *test = createPixelArray(width(emojiBuffer), height(emojiBuffer));
     // int index = 1968;
 
-    for (int index = 0; index < imageCount; index++)
-    {
-        usleep(1000000 / 5);
+    // get average pixel
+    pixel target = {255, 59,242, 255}; // 1537
 
-        printf("%d - rgba(%d, %d, %d, %d)\n", index, *((__uint8_t *)(averages + index) + 2),
-               *((__uint8_t *)(averages + index) + 1), *((__uint8_t *)(averages + index)),
-               *((__uint8_t *)(averages + index) + 3));
+    int index = findEmoji(&target, averages, imageCount);
 
-        pixel *averageStrip = createPixelArray(width(emojiBuffer), 3);
-        for (int z = 0; z < width(averageStrip) * height(averageStrip); z++)
-            *(averageStrip + z) = *(averages + index);
+    usleep(1000000 / 5);
 
-        memcpy(test, emojiBuffer + (imageSize * index), imageSize * sizeof(pixel));
-        memcpy(test, averageStrip, width(averageStrip) * height(averageStrip) * sizeof(pixel));
+    printf("%d - rgba(%d, %d, %d, %d)\n", index, *((__uint8_t *)(averages + index) + 2),
+           *((__uint8_t *)(averages + index) + 1), *((__uint8_t *)(averages + index)),
+           *((__uint8_t *)(averages + index) + 3));
 
-        writeArray(test, "test.bmp");
-    }
+    pixel *averageStrip = createPixelArray(width(emojiBuffer), 3);
+    for (int z = 0; z < width(averageStrip) * height(averageStrip); z++)
+        *(averageStrip + z) = *(averages + index);
+
+    memcpy(test, emojiBuffer + (imageSize * index), imageSize * sizeof(pixel));
+    memcpy(test, averageStrip, width(averageStrip) * height(averageStrip) * sizeof(pixel));
+
+    writeArray(test, "test.bmp");
 
     return 0;
 }

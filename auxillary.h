@@ -67,6 +67,8 @@ int generateChart(__uint8_t scale)
                 __uint32_t averageCount = 0;
                 __uint8_t *colorBuffer;
 
+                char color = 0;
+
                 for (int y = 0; y < fileHeight; y++)
                 {
                     for (int x = 0; x < fileWidth; x++)

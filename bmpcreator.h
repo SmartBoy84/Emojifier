@@ -10,9 +10,9 @@
 
 typedef struct
 {
-    __uint8_t red;
-    __uint8_t green;
     __uint8_t blue;
+    __uint8_t green;
+    __uint8_t red;
     __uint8_t alpha;
 } pixel;
 
