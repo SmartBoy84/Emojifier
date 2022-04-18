@@ -22,3 +22,4 @@ To convert image to a compatible format install imagemagick and run `mogrify -de
 - ~Add option to choose which emoji set to use~
 - ~Embed emoji data into executable~
 - Build in auto image conversion
+- Add slight dithering to improve quality
