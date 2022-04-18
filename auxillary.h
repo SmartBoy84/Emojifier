@@ -1,8 +1,8 @@
-#include <stdint.h>
-#include <math.h>
-#include <dirent.h>
 #include "bmpcreator.h"
 #include "bmpreader.h"
+#include <dirent.h>
+#include <math.h>
+#include <stdint.h>
 
 char fileName[100];
 int generated = 1;
@@ -40,10 +40,20 @@ char *generateChart(char *bufferName, char *emojisFolder, uint8_t scale, int fN)
             return NULL;
         }
 
-        if (scale > 1 && (fWidth % scale != 0 || fHeight % scale != 0))
+        if (scale > 1)
         {
-            printf("%dx%d not scalable by factor %d\n", fWidth, fHeight, scale);
-            return NULL;
+            if (fWidth % scale != 0 || fHeight % scale != 0)
+            {
+                printf("%dx%d not scalable by factor %d\n", fWidth, fHeight, scale);
+                return NULL;
+            }
+            else if (fWidth < 24 || fHeight < 24)
+            {
+                printf("Woah there! That is one TINY file (%dx%d) you're trying to scale there, we don't do work on "
+                       "children here",
+                       fWidth, fHeight);
+                return NULL;
+            }
         }
 
         int32_t aWidth = sqrt(fN) + 1;
