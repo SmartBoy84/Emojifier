@@ -1,5 +1,5 @@
 # Emojifier
-[Check it out!](http://gabba.ga/files/img.png)
+[Check it out! (works best if you download it)](https://drive.google.com/file/d/10VVGLyAoDJfF2WBa0r6hiepQYS9-RVWB/view?usp=sharing)
 
 ## Usage
 `./emojifier [file name] {[buffer name]} {[emojis folder] [buffer resolution] [file count]}`
