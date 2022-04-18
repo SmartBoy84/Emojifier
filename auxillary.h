@@ -26,7 +26,7 @@ char *generateChart(char *bufferName, char *emojisFolder, uint8_t scale, int fN)
 {
     printf("Generating auxillary buffers %s[.bin & .bmp]\nScale: %d, file count: %d\n", bufferName, scale, fN);
 
-    DIR *dir = opendir("emojis");
+    DIR *dir = opendir(emojisFolder);
 
     if (dir)
     {
