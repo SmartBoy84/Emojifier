@@ -1,10 +1,11 @@
+#include <stdint.h>
+#include <math.h>
+#include <dirent.h>
 #include "bmpcreator.h"
 #include "bmpreader.h"
-#include <dirent.h>
-#include <math.h>
-#include <stdint.h>
 
 char fileName[100];
+int generated = 1;
 
 char *createName(int index, char *folder)
 {
@@ -21,7 +22,7 @@ char *createName(int index, char *folder)
     return fileName;
 }
 
-char* generateChart(char *bufferName, char *emojisFolder, uint8_t scale, int fN)
+char *generateChart(char *bufferName, char *emojisFolder, uint8_t scale, int fN)
 {
     printf("Generating auxillary buffers %s[.bin & .bmp]\nScale: %d, file count: %d\n", bufferName, scale, fN);
 
@@ -145,6 +146,7 @@ char* generateChart(char *bufferName, char *emojisFolder, uint8_t scale, int fN)
 
         fclose(wptr);
 
+        generated = 0;
         return fileName;
     }
     else

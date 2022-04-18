@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
         if (argc == 6 && !(fileName = generateChart(argv[2], argv[3], atoi(argv[4]), atoi(argv[5]))))
         {
-            printf("\nFailed to generate buffer\n");
+            printf("Failed to generate buffer\n");
             return 1;
         }
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
             readBufferFile(eF, &imageCount, &emojiBuffer, &averages);
         else
         {
-            printf("\nFailed to read buffer %s\n", argv[2]);
+            printf("Failed to read buffer %s\n", argv[2]);
             return 1;
         }
     }
@@ -120,5 +120,5 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    return 1;
+    return generated; // see if the program has actually failed to do anything at this point
 }
