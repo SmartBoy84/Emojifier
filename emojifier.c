@@ -39,22 +39,23 @@ int main(int argc, char *argv[])
     }
     else
     {
-        FILE *eF;
-        char *fileName;
+        char *fName;
 
-        if (argc == 6 && !(fileName = generateChart(argv[2], argv[3], atoi(argv[4]), atoi(argv[5]))))
+        if (argc == 6 && !(fName = generateChart(argv[2], argv[3], atoi(argv[4]), atoi(argv[5]))))
         {
             printf("Failed to generate buffer\n");
             return 1;
         }
 
-        if (eF = fopen(fileName, "rb"))
-            readBufferFile(eF, &imageCount, &emojiBuffer, &averages);
-        else
+        FILE *eF = fopen(fName, "rb");
+
+        if (eF == NULL)
         {
             printf("Failed to read buffer %s\n", argv[2]);
             return 1;
         }
+        else
+            readBufferFile(eF, &imageCount, &emojiBuffer, &averages);
     }
 
     pixel *Image;
