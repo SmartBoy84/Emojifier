@@ -23,3 +23,4 @@ To convert image to a compatible format install imagemagick and run `mogrify -de
 - ~Embed emoji data into executable~
 - Build in auto image conversion
 - Add slight dithering to improve quality
+- Tssellate one image with varying brightness
