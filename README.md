@@ -1,5 +1,5 @@
 # Emojifier
-[Chek it out!](http://gabba.ga/files/img.png)
+[Check it out!](http://gabba.ga/files/img.png)
 
 ## Usage
 `./emojifier [file name] {[buffer name]} {[emojis folder] [buffer resolution] [file count]}`
