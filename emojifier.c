@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        char *fName;
+        char *fName = argv[2];
 
         if (argc == 6 && !(fName = generateChart(argv[2], argv[3], atoi(argv[4]), atoi(argv[5]))))
         {
