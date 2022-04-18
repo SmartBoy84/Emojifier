@@ -1,5 +1,6 @@
 # Emojifier
 [Chek it out!](http://gabba.ga/files/img.png)
+![Apple](https://user-images.githubusercontent.com/12468102/163741350-d263680f-7fa3-4ea2-aa72-db9c370fac2e.jpg)
 
 ## Usage
 `./emojifier [file name] {[buffer name]} {[emojis folder] [buffer resolution] [file count]}`
