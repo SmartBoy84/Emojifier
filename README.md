@@ -24,3 +24,4 @@ To convert image to a compatible format install imagemagick and run `mogrify -de
 - Build in auto image conversion
 - Add slight dithering to improve quality
 - Tssellate one image with varying brightness
+- Randomly pick emojis with the same average rgb value (or prefer emojis with more pixel data?)
