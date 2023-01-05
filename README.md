@@ -1,3 +1,5 @@
+## This was my first ever project in a C* based language so excuse the many errors (e.g., shoving code into header files!) 
+
 # Emojifier
 [Check it out! (works best if you download it)](https://drive.google.com/file/d/10VVGLyAoDJfF2WBa0r6hiepQYS9-RVWB/view?usp=sharing)
 
