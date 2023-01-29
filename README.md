@@ -1,6 +1,3 @@
-# Archived in favour of a remake in golang 
-Everything handled separately here by bash, js, c is unified into one static executable over there!
-
 ## This was my first ever project in a C* based language so excuse the many errors (e.g., shoving code into header files!) 
 
 # Emojifier
